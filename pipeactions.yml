@@ -1,0 +1,14 @@
+project: 
+  language: terraform
+
+deploy: 
+
+infra: 
+  terraform: 
+  node-version: "16"
+  version: "1.5.7"
+
+
+tests:
+  failOnError: false
+  

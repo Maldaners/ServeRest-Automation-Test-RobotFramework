@@ -9,31 +9,28 @@ Library    String
 
 I want to create a new user
     New User data
+    
+I send all the required data in the request
     Post New User
-    Conferir usuario cadastrado corretamente
-# I send all the required data in the request
-#     Decode Bytes To String
-
-# the response should return status code 201 Created
-#     Fail
 
 
 
 New User data
-   ${words}   Generate Random String   
+    ${words}   Generate Random String   12    [LETTERS] 
     ${words}   Convert To Lower Case    ${words}   
-   Set Test Variable    ${email}  ${words}@emailtest.com
+    Set Test Variable    ${email}       ${words}@emailtest.com
     Log To Console     ${email}
-   ${senha}   Generate Random String   
-    ${senha}   Convert To Lower Case    ${senha}   
-   Set Test Variable    ${password}  ${senha}
+
+
+    ${senha}   Generate Random String   8   [NUMBERS][LETTERS]  
+    Set Test Variable    ${password}   ${senha}
 
 Post New User
    ${body}   Create Dictionary   
    ...       nome=Someone dos Santos  
    ...       email=${email}  
-   ...      password=${password}
-   ...  administrador=true  
+   ...       password=${password}
+   ...       administrador=true  
    
    
    Criar Sessão
@@ -41,29 +38,15 @@ Post New User
     ...    alias=ServerRest
     ...    url=/usuarios
     ...    json=${body}
-    
-    Set Task Variable    ${RESPONSE}   ${Response.json()}
-
-Cadastrar novo usuario criado com erro na ServerRest
-    Buscar dados para Login 
-
-   ${body}   Create Dictionary   
-   ...       nome= 
-   ...       email=${email}
-   ...  administrador=true  
    
-   
-   Criar Sessão
-    ${Response}  POST On Session  
-    ...    alias=ServerRest
-    ...    url=/usuarios
-    ...    json=${body}
-    
+    Set Task Variable    ${Response}   ${Response}
+    Log To Console    ${Response}
 
-    Set Task Variable    ${RESPONSE}   ${Response.json()}
-    Log To Console    ${Response.json()}
-Então a chamada deverá retornar ${statusCode}
-    Should Be Equal As Integers    ${Response.status_code}   ${statusCode}
+the response should return status code ${statusCode} ${reason}
+    Should Be Equal As Numbers     ${Response.status_code}   ${statusCode}
+    Should Be Equal As Strings     ${Response.reason}   ${reason}
+    
+    Conferir usuario cadastrado corretamente
 
 Buscar dados para Login 
     Criar Sessão
@@ -76,9 +59,6 @@ Buscar dados para Login
     Set Test Variable    ${email}    ${Response}[usuarios][0][email]
     Set Test Variable    ${password}    ${Response}[usuarios][0][password]
 
-Criar Sessão
-    ${headers}  Create Dictionary  accept=application/json  Content-Type=application/json 
-    Create Session    alias=ServerRest    url=https://serverest.dev  headers=${headers} 
 
 Login test com email na ServerRest
    ${body}   Create Dictionary   
@@ -97,5 +77,5 @@ Login test com email na ServerRest
     
 Conferir usuario cadastrado corretamente
 
-    Dictionary Should Contain Item  ${RESPONSE}  message  Cadastro realizado com sucesso 
-    Dictionary Should Contain Key   ${RESPONSE}    _id 
+    Dictionary Should Contain Item  ${Response.json()}  message  Cadastro realizado com sucesso 
+    Dictionary Should Contain Key   ${Response.json()}    _id 

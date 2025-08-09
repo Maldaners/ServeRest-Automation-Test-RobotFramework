@@ -28,7 +28,7 @@ jobs:
           pip install robotframework-jsonlibrary
 
       - name: Run Robot Framework tests
-        run:  robot Tests/tests/*.robot
+        run:  robot Tests/tests/user/*.robot
 
       - name: Upload Robot Framework reports
         uses: actions/upload-artifact@v4
